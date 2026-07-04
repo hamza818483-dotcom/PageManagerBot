@@ -2,11 +2,17 @@ import { supabaseFetch, fbGraph } from './utils.js';
 
 export async function runScheduler(env) {
   const now = new Date().toISOString();
-  const due = await supabaseFetch(
-    env,
-    `scheduled_posts?status=eq.pending&scheduled_at=lte.${now}&select=*,pages(page_id,access_token)`,
-    { method: 'GET' }
-  );
+  let due;
+  try {
+    due = await supabaseFetch(
+      env,
+      `scheduled_posts?status=eq.pending&scheduled_at=lte.${now}&select=*,pages(page_id,access_token)`,
+      { method: 'GET' }
+    );
+  } catch (err) {
+    console.log('Scheduler skip: ' + err.message);
+    return;
+  }
   if (!due || !due.length) return;
 
   for (const post of due) {
