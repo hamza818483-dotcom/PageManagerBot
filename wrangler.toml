@@ -3,7 +3,7 @@ main = "worker/src/index.js"
 compatibility_date = "2026-07-01"
 
 [triggers]
-crons = ["*/5 * * * *"]
+crons = ["*/15 * * * *"]
 
 # Run: wrangler kv namespace create SESSIONS
 # Then paste the returned id below before deploying
