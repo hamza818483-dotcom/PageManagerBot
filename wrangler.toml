@@ -12,7 +12,7 @@ binding = "SESSIONS"
 id = "145f1adb6ece43a08c12cad394d64c0b"
 
 [vars]
-FB_APP_ID = "27722463284039755"
+FB_APP_ID = "4383511231873662"
 FB_GRAPH_VERSION = "v21.0"
 SITE_URL = "https://pagemanagerbot.pages.dev"
 SITE_URL_BACKEND = "https://pagemanagerbot.hamza818483.workers.dev"
