@@ -14,6 +14,12 @@ jobs:
         with:
           node-version: 20
       - run: npm install -g wrangler
+      - name: Deploy (initial)
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CF_API_TOKEN }}
+          accountId: ${{ secrets.CF_ACCOUNT_ID }}
+          command: deploy
       - name: Set secrets
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CF_API_TOKEN }}
@@ -22,7 +28,7 @@ jobs:
           echo "${{ secrets.SUPABASE_SERVICE_KEY }}" | wrangler secret put SUPABASE_SERVICE_KEY
           echo "${{ secrets.FB_APP_SECRET }}" | wrangler secret put FB_APP_SECRET
           echo "${{ secrets.FB_VERIFY_TOKEN }}" | wrangler secret put FB_VERIFY_TOKEN
-      - name: Deploy
+      - name: Deploy (final)
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CF_API_TOKEN }}
