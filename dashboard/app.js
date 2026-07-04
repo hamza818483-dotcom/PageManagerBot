@@ -1,4 +1,4 @@
-const API_BASE = "https://pagemanager.hamza818483.workers.dev";
+const API_BASE = "https://pagemanagerbot.hamza818483.workers.dev";;
 
 let sessionToken = localStorage.getItem('pmb_token');
 let currentPageId = null;

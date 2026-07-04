@@ -1,9 +1,9 @@
-name = "pagemanager"
+name = "pagemanagerbot"
 main = "worker/src/index.js"
 compatibility_date = "2026-07-01"
 
 [triggers]
-crons = ["*/15 * * * *"]
+crons = []
 
 # Run: wrangler kv namespace create SESSIONS
 # Then paste the returned id below before deploying
@@ -15,7 +15,7 @@ id = "145f1adb6ece43a08c12cad394d64c0b"
 FB_APP_ID = "27722463284039755"
 FB_GRAPH_VERSION = "v19.0"
 SITE_URL = "https://pagemanagerbot.pages.dev"
-SITE_URL_BACKEND = "https://pagemanager.hamza818483.workers.dev"
+SITE_URL_BACKEND = "https://pagemanagerbot.hamza818483.workers.dev"
 SUPABASE_URL = "https://jtaftbljhbkbnwxrxzsa.supabase.co"
 
 # Set via: wrangler secret put FB_APP_SECRET / SUPABASE_URL / SUPABASE_SERVICE_KEY / FB_VERIFY_TOKEN
