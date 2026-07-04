@@ -3,9 +3,6 @@ name: Deploy Worker
 on:
   push:
     branches: [main]
-    paths:
-      - 'worker/**'
-      - 'wrangler.toml'
   workflow_dispatch:
 
 jobs:
