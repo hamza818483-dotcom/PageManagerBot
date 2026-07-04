@@ -1,4 +1,4 @@
-const API_BASE = "__WORKER_URL__"; // replace after worker deploy, e.g. https://page-manager-bot.yourname.workers.dev
+const API_BASE = "https://pagemanager.hamza818483.workers.dev";
 
 let sessionToken = localStorage.getItem('pmb_token');
 let currentPageId = null;

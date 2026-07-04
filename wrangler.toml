@@ -14,7 +14,7 @@ id = "145f1adb6ece43a08c12cad394d64c0b"
 [vars]
 FB_APP_ID = "REPLACE_WITH_FB_APP_ID"
 FB_GRAPH_VERSION = "v19.0"
-SITE_URL = "https://REPLACE-your-pages-domain.pages.dev"
-SITE_URL_BACKEND = "https://REPLACE-your-worker-domain.workers.dev"
+SITE_URL = "https://pagemanagerbot.pages.dev"
+SITE_URL_BACKEND = "https://pagemanager.hamza818483.workers.dev"
 
 # Set via: wrangler secret put FB_APP_SECRET / SUPABASE_URL / SUPABASE_SERVICE_KEY / FB_VERIFY_TOKEN
