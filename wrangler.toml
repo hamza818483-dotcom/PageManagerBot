@@ -5,13 +5,16 @@ compatibility_date = "2026-07-01"
 [triggers]
 crons = ["*/5 * * * *"]
 
+# Run: wrangler kv namespace create SESSIONS
+# Then paste the returned id below before deploying
 [[kv_namespaces]]
 binding = "SESSIONS"
-id = ""
+id = "REPLACE_WITH_KV_ID"
 
 [vars]
-FB_APP_ID = ""
+FB_APP_ID = "REPLACE_WITH_FB_APP_ID"
 FB_GRAPH_VERSION = "v19.0"
-SITE_URL = ""
+SITE_URL = "https://REPLACE-your-pages-domain.pages.dev"
+SITE_URL_BACKEND = "https://REPLACE-your-worker-domain.workers.dev"
 
 # Set via: wrangler secret put FB_APP_SECRET / SUPABASE_URL / SUPABASE_SERVICE_KEY / FB_VERIFY_TOKEN
