@@ -5,9 +5,8 @@ export async function handleAuthLogin(request, env) {
   const scope = [
     'pages_show_list',
     'pages_manage_posts',
-    'pages_manage_metadata',
-    'pages_manage_engagement',
     'pages_read_engagement',
+    'pages_manage_metadata',
     'pages_messaging'
   ].join(',');
   const authUrl = `https://www.facebook.com/${env.FB_GRAPH_VERSION}/dialog/oauth?client_id=${env.FB_APP_ID}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${scope}&response_type=code`;
