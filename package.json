@@ -1,0 +1,12 @@
+{
+  "name": "page-manager-bot",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "wrangler dev worker/src/index.js",
+    "deploy": "wrangler deploy worker/src/index.js"
+  },
+  "devDependencies": {
+    "wrangler": "^3.90.0"
+  }
+}

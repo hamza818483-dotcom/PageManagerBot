@@ -1,0 +1,17 @@
+name = "page-manager-bot"
+main = "worker/src/index.js"
+compatibility_date = "2026-07-01"
+
+[triggers]
+crons = ["*/5 * * * *"]
+
+[[kv_namespaces]]
+binding = "SESSIONS"
+id = ""
+
+[vars]
+FB_APP_ID = ""
+FB_GRAPH_VERSION = "v19.0"
+SITE_URL = ""
+
+# Set via: wrangler secret put FB_APP_SECRET / SUPABASE_URL / SUPABASE_SERVICE_KEY / FB_VERIFY_TOKEN
