@@ -1,4 +1,4 @@
-import { fbGraph, supabaseFetch } from './utils.js';
+import { fbGraph, d1All, d1First, d1Run, newId } from './utils.js';
 
 export async function handleWebhookVerify(request, env) {
   const url = new URL(request.url);
@@ -43,19 +43,14 @@ async function handleNewComment(fbPageId, value, env) {
   if (!commentId || !commenterId) return;
 
   // Get page + its access token
-  const pages = await supabaseFetch(env, `pages?page_id=eq.${fbPageId}`, { method: 'GET' });
-  if (!pages || !pages.length) return;
-  const page = pages[0];
+  const page = await d1First(env, `SELECT * FROM pages WHERE page_id = ?`, [fbPageId]);
+  if (!page) return;
 
   // Ignore comments made by the page itself (avoid loops)
   if (commenterId === fbPageId) return;
 
   // Get active rules ordered by priority
-  const rules = await supabaseFetch(
-    env,
-    `reply_rules?page_id=eq.${page.id}&active=eq.true&order=priority.desc`,
-    { method: 'GET' }
-  );
+  const rules = await d1All(env, `SELECT * FROM reply_rules WHERE page_id = ? AND active = 1 ORDER BY priority DESC`, [page.id]);
   if (!rules || !rules.length) return;
 
   const matched = rules.find(r => {
@@ -101,14 +96,6 @@ async function handleNewComment(fbPageId, value, env) {
   }
 
   // Log
-  await supabaseFetch(env, 'reply_logs', {
-    method: 'POST',
-    body: JSON.stringify({
-      page_id: page.id,
-      rule_id: matched.id,
-      commenter_name: commenterName,
-      comment_text: value.message,
-      action
-    })
-  });
+  await d1Run(env, `INSERT INTO reply_logs (id, page_id, rule_id, commenter_name, comment_text, action) VALUES (?, ?, ?, ?, ?, ?)`,
+    [newId(), page.id, matched.id, commenterName, value.message, action]);
 }

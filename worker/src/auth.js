@@ -1,4 +1,4 @@
-import { jsonResponse, fbGraph, supabaseFetch } from './utils.js';
+import { jsonResponse, fbGraph, d1All, d1First, d1Run, newId } from './utils.js';
 
 export async function handleAuthLogin(request, env) {
   const redirectUri = `${env.SITE_URL_BACKEND}/auth/callback`;
@@ -30,32 +30,24 @@ export async function handleAuthCallback(request, env) {
 
   const profile = await fbGraph(env, 'me', { fields: 'id,name,email', access_token: longLived.access_token });
 
-  const users = await supabaseFetch(env, `users?fb_user_id=eq.${profile.id}`, { method: 'GET' });
-  let user;
-  if (users && users.length) {
-    user = users[0];
-  } else {
-    const created = await supabaseFetch(env, 'users', {
-      method: 'POST',
-      body: JSON.stringify({ fb_user_id: profile.id, name: profile.name, email: profile.email })
-    });
-    user = created[0];
+  let user = await d1First(env, `SELECT * FROM users WHERE fb_user_id = ?`, [profile.id]);
+  if (!user) {
+    const id = newId();
+    await d1Run(env, `INSERT INTO users (id, fb_user_id, name, email) VALUES (?, ?, ?, ?)`,
+      [id, profile.id, profile.name, profile.email]);
+    user = { id, fb_user_id: profile.id, name: profile.name, email: profile.email };
   }
 
   const pagesRes = await fbGraph(env, 'me/accounts', { access_token: longLived.access_token });
   if (pagesRes.data) {
     for (const p of pagesRes.data) {
-      const existing = await supabaseFetch(env, `pages?page_id=eq.${p.id}`, { method: 'GET' });
-      const payload = {
-        user_id: user.id,
-        page_id: p.id,
-        page_name: p.name,
-        access_token: p.access_token
-      };
-      if (existing && existing.length) {
-        await supabaseFetch(env, `pages?page_id=eq.${p.id}`, { method: 'PATCH', body: JSON.stringify(payload) });
+      const existing = await d1First(env, `SELECT id FROM pages WHERE page_id = ?`, [p.id]);
+      if (existing) {
+        await d1Run(env, `UPDATE pages SET user_id = ?, page_name = ?, access_token = ? WHERE page_id = ?`,
+          [user.id, p.name, p.access_token, p.id]);
       } else {
-        await supabaseFetch(env, 'pages', { method: 'POST', body: JSON.stringify(payload) });
+        await d1Run(env, `INSERT INTO pages (id, user_id, page_id, page_name, access_token) VALUES (?, ?, ?, ?, ?)`,
+          [newId(), user.id, p.id, p.name, p.access_token]);
       }
       await fbGraph(env, `${p.id}/subscribed_apps`, {
         subscribed_fields: 'feed,messages',

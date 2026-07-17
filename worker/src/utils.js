@@ -13,23 +13,22 @@ export function jsonResponse(data, status = 200) {
   });
 }
 
-export async function supabaseFetch(env, path, options = {}) {
-  const res = await fetch(`${env.SUPABASE_URL}/rest/v1/${path}`, {
-    ...options,
-    headers: {
-      'apikey': env.SUPABASE_SERVICE_KEY,
-      'Authorization': `Bearer ${env.SUPABASE_SERVICE_KEY}`,
-      'Content-Type': 'application/json',
-      'Prefer': 'return=representation',
-      ...(options.headers || {})
-    }
-  });
-  if (!res.ok) {
-    const text = await res.text();
-    throw new Error(`Supabase error ${res.status}: ${text}`);
-  }
-  const text = await res.text();
-  return text ? JSON.parse(text) : null;
+export function newId() {
+  return crypto.randomUUID();
+}
+
+// D1 helpers
+export async function d1All(env, sql, params = []) {
+  const res = await env.DB.prepare(sql).bind(...params).all();
+  return res.results;
+}
+
+export async function d1First(env, sql, params = []) {
+  return await env.DB.prepare(sql).bind(...params).first();
+}
+
+export async function d1Run(env, sql, params = []) {
+  return await env.DB.prepare(sql).bind(...params).run();
 }
 
 export async function fbGraph(env, path, params = {}, method = 'GET') {

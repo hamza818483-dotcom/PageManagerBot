@@ -5,7 +5,7 @@ Facebook Page auto-reply (comment → public reply + inbox DM) + post scheduler,
 ## Architecture
 - **worker/** → Cloudflare Worker: FB OAuth, webhook receiver, REST API, cron scheduler
 - **dashboard/** → Cloudflare Pages static site (login, rules manager, post scheduler)
-- **Supabase** → users, pages, reply_rules, scheduled_posts, reply_logs
+- **D1** → users, pages, reply_rules, scheduled_posts, reply_logs
 
 ## Setup Steps
 
@@ -18,9 +18,9 @@ Facebook Page auto-reply (comment → public reply + inbox DM) + post scheduler,
 6. Subscribe to fields: `feed`, `messages`
 7. App Review → request permissions: `pages_show_list`, `pages_manage_posts`, `pages_manage_metadata`, `pages_manage_engagement`, `pages_read_engagement`, `pages_messaging` (business verification needed for live mode)
 
-### 2. Supabase
-1. Run `supabase_schema.sql` in SQL Editor (project: btezborkuiqfogykrjrn, already tomar existing project use korte parba, notun table gulo add hobe)
-2. Copy `Project URL` and `service_role` key
+### 2. Cloudflare D1
+1. Database `pagemanagerbot_db` already created; schema applied from `d1_schema.sql` (tables: users, pages, reply_rules, scheduled_posts, reply_logs).
+2. Bound in `wrangler.toml` as `DB`.
 
 ### 3. Cloudflare Worker
 ```bash
@@ -30,11 +30,9 @@ wrangler kv namespace create SESSIONS
 # copy the id output into wrangler.toml [[kv_namespaces]] id field
 
 wrangler secret put FB_APP_SECRET
-wrangler secret put SUPABASE_URL
-wrangler secret put SUPABASE_SERVICE_KEY
 wrangler secret put FB_VERIFY_TOKEN
 
-# edit wrangler.toml vars: FB_APP_ID, SITE_URL (pages domain), SITE_URL_BACKEND (worker domain) — add SITE_URL_BACKEND under [vars] too
+# edit wrangler.toml vars: FB_APP_ID, SITE_URL (pages domain), SITE_URL_BACKEND (worker domain)
 wrangler deploy
 ```
 

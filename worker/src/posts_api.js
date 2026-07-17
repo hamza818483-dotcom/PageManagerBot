@@ -1,4 +1,4 @@
-import { jsonResponse, supabaseFetch, getUserIdFromRequest } from './utils.js';
+import { jsonResponse, d1All, d1First, d1Run, newId, getUserIdFromRequest } from './utils.js';
 
 export async function handleGetPosts(request, env) {
   const userId = await getUserIdFromRequest(request, env);
@@ -8,7 +8,7 @@ export async function handleGetPosts(request, env) {
   const pageId = url.searchParams.get('page_id');
   if (!pageId) return jsonResponse({ error: 'page_id required' }, 400);
 
-  const posts = await supabaseFetch(env, `scheduled_posts?page_id=eq.${pageId}&order=scheduled_at.desc`, { method: 'GET' });
+  const posts = await d1All(env, `SELECT * FROM scheduled_posts WHERE page_id = ? ORDER BY scheduled_at DESC`, [pageId]);
   return jsonResponse({ posts });
 }
 
@@ -19,11 +19,11 @@ export async function handleCreatePost(request, env) {
   const { page_id, message, image_url, scheduled_at } = await request.json();
   if (!page_id || !scheduled_at) return jsonResponse({ error: 'page_id and scheduled_at required' }, 400);
 
-  const result = await supabaseFetch(env, 'scheduled_posts', {
-    method: 'POST',
-    body: JSON.stringify({ page_id, message, image_url, scheduled_at, status: 'pending' })
-  });
-  return jsonResponse({ post: result[0] });
+  const id = newId();
+  await d1Run(env, `INSERT INTO scheduled_posts (id, page_id, message, image_url, scheduled_at, status) VALUES (?, ?, ?, ?, ?, 'pending')`,
+    [id, page_id, message, image_url, scheduled_at]);
+  const post = await d1First(env, `SELECT * FROM scheduled_posts WHERE id = ?`, [id]);
+  return jsonResponse({ post });
 }
 
 export async function handleDeletePost(request, env) {
@@ -34,6 +34,6 @@ export async function handleDeletePost(request, env) {
   const id = url.searchParams.get('id');
   if (!id) return jsonResponse({ error: 'id required' }, 400);
 
-  await supabaseFetch(env, `scheduled_posts?id=eq.${id}`, { method: 'DELETE' });
+  await d1Run(env, `DELETE FROM scheduled_posts WHERE id = ?`, [id]);
   return jsonResponse({ success: true });
 }
