@@ -45,14 +45,17 @@ async function loadPages() {
   const { pages, error } = await api('/api/pages');
   if (error) { logout(); return; }
   if (!pages || !pages.length) {
-    container.innerHTML = '<p class="muted">Kono page paoa jayni. Facebook e page thakle login re-check koro.</p>';
+    container.innerHTML = '<div class="empty-state"><span class="pulse-dot"></span><p class="muted">Kono page paoa jayni.<br>Facebook e page thakle login re-check koro.</p></div>';
     return;
   }
   container.innerHTML = pages.map(p => `
     <div class="page-item card" style="margin-bottom:8px;" onclick="openPage('${p.id}','${p.page_name}')">
-      <div>
-        <strong>${p.page_name}</strong><br>
-        <span class="muted">ID: ${p.page_id}</span>
+      <div class="page-item-left">
+        <div class="page-avatar">${(p.page_name || '?').trim().charAt(0).toUpperCase()}</div>
+        <div class="page-item-meta">
+          <strong>${p.page_name}</strong>
+          <span class="muted">ID: ${p.page_id}</span>
+        </div>
       </div>
       <span class="tag">${p.webhook_subscribed ? 'Subscribed' : 'Active'}</span>
     </div>
@@ -87,7 +90,7 @@ async function loadRules() {
   const container = document.getElementById('rulesContainer');
   const { rules } = await api(`/api/rules?page_id=${currentPageId}`);
   if (!rules || !rules.length) {
-    container.innerHTML = '<p class="muted">Kono rule set kora hoyni.</p>';
+    container.innerHTML = '<div class="empty-state"><span class="pulse-dot"></span><p class="muted">Kono rule set kora hoyni.</p></div>';
     return;
   }
   container.innerHTML = rules.map(r => `
@@ -125,7 +128,7 @@ async function loadPosts() {
   const container = document.getElementById('postsContainer');
   const { posts } = await api(`/api/posts?page_id=${currentPageId}`);
   if (!posts || !posts.length) {
-    container.innerHTML = '<p class="muted">Kono post schedule kora nai.</p>';
+    container.innerHTML = '<div class="empty-state"><span class="pulse-dot"></span><p class="muted">Kono post schedule kora nai.</p></div>';
     return;
   }
   container.innerHTML = posts.map(p => `
