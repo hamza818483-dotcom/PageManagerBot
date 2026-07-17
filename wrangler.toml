@@ -19,7 +19,7 @@ database_id = "5c4b0374-379c-46e3-a604-5104da63b4a7"
 [vars]
 FB_APP_ID = "1514255353199938"
 FB_GRAPH_VERSION = "v21.0"
-FB_CONFIG_ID = "1561752925619794"
+FB_CONFIG_ID = "1038565902467207"
 SITE_URL = "https://pagemanagerbot.pages.dev"
 SITE_URL_BACKEND = "https://pagemanagerbot.hamza818483.workers.dev"
 
