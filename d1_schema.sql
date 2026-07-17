@@ -56,3 +56,17 @@ CREATE TABLE reply_logs (
 
 CREATE INDEX idx_reply_rules_page ON reply_rules(page_id, active);
 CREATE INDEX idx_scheduled_posts_status ON scheduled_posts(status, scheduled_at);
+
+CREATE TABLE error_logs (
+  id TEXT PRIMARY KEY,
+  location TEXT NOT NULL,
+  message TEXT NOT NULL,
+  detail TEXT,
+  request_id TEXT,
+  user_id TEXT,
+  page_id TEXT,
+  path TEXT,
+  created_at TEXT DEFAULT (datetime('now'))
+);
+
+CREATE INDEX idx_error_logs_created ON error_logs(created_at DESC);

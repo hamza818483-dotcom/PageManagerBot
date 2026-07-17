@@ -23,6 +23,34 @@ function logout() {
   location.reload();
 }
 
+async function viewSystemErrors() {
+  document.getElementById('pageListView').classList.add('hidden');
+  document.getElementById('pageDetailView').classList.add('hidden');
+  document.getElementById('systemErrorsView').classList.remove('hidden');
+
+  const container = document.getElementById('systemErrorsContainer');
+  container.innerHTML = '<p class="muted">Loading...</p>';
+  const { errors, error } = await api('/api/errors');
+  if (error) { container.innerHTML = `<p class="muted">Load failed: ${error}</p>`; return; }
+  if (!errors || !errors.length) {
+    container.innerHTML = '<div class="empty-state"><span class="pulse-dot"></span><p class="muted">Kono error paoa jayni. Sob thik ache.</p></div>';
+    return;
+  }
+  container.innerHTML = errors.map(e => `
+    <div class="rule-item">
+      <div><span class="tag">${new Date(e.created_at).toLocaleString()}</span><strong>${e.location}</strong></div>
+      <div class="muted" style="color:#f87171;">${e.message}</div>
+      ${e.path ? `<div class="muted">Path: ${e.path}</div>` : ''}
+      ${e.page_id ? `<div class="muted">Page: ${e.page_id}</div>` : ''}
+    </div>
+  `).join('');
+}
+
+function backFromErrors() {
+  document.getElementById('systemErrorsView').classList.add('hidden');
+  document.getElementById('pageListView').classList.remove('hidden');
+}
+
 function init() {
   const urlParams = new URLSearchParams(window.location.search);
   const tokenFromUrl = urlParams.get('token');

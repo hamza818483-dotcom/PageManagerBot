@@ -283,7 +283,16 @@
 <div id="appScreen" class="container hidden">
   <div class="top-bar">
     <h1><span class="pulse-dot"></span>Page Manager Bot</h1>
-    <button class="btn secondary" onclick="logout()">Logout</button>
+    <div style="display:flex;gap:8px;">
+      <button class="btn secondary" onclick="viewSystemErrors()">Errors</button>
+      <button class="btn secondary" onclick="logout()">Logout</button>
+    </div>
+  </div>
+
+  <div id="systemErrorsView" class="hidden">
+    <button class="btn secondary" onclick="backFromErrors()" style="margin-bottom:16px;">&larr; Back</button>
+    <h2 style="margin-top:0;">System Errors (last 100)</h2>
+    <div id="systemErrorsContainer" class="card"><p class="muted">Loading...</p></div>
   </div>
 
   <div id="pageListView">
