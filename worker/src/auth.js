@@ -36,8 +36,8 @@ export async function handleAuthCallback(request, env) {
   if (!user) {
     const id = newId();
     await d1Run(env, `INSERT INTO users (id, fb_user_id, name, email) VALUES (?, ?, ?, ?)`,
-      [id, profile.id, profile.name, profile.email]);
-    user = { id, fb_user_id: profile.id, name: profile.name, email: profile.email };
+      [id, profile.id, profile.name ?? null, profile.email ?? null]);
+    user = { id, fb_user_id: profile.id, name: profile.name ?? null, email: profile.email ?? null };
   }
 
   const pagesRes = await fbGraph(env, 'me/accounts', { access_token: longLived.access_token });
@@ -46,10 +46,10 @@ export async function handleAuthCallback(request, env) {
       const existing = await d1First(env, `SELECT id FROM pages WHERE page_id = ?`, [p.id]);
       if (existing) {
         await d1Run(env, `UPDATE pages SET user_id = ?, page_name = ?, access_token = ? WHERE page_id = ?`,
-          [user.id, p.name, p.access_token, p.id]);
+          [user.id, p.name ?? null, p.access_token ?? null, p.id]);
       } else {
         await d1Run(env, `INSERT INTO pages (id, user_id, page_id, page_name, access_token) VALUES (?, ?, ?, ?, ?)`,
-          [newId(), user.id, p.id, p.name, p.access_token]);
+          [newId(), user.id, p.id, p.name ?? null, p.access_token ?? null]);
       }
       await fbGraph(env, `${p.id}/subscribed_apps`, {
         subscribed_fields: 'feed,messages',
