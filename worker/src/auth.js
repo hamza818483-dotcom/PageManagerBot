@@ -41,7 +41,12 @@ export async function handleAuthCallback(request, env) {
     user = { id, fb_user_id: profile.id, name: profile.name ?? null, email: profile.email ?? null };
   }
 
-  const pagesRes = await fbGraph(env, 'me/accounts', { access_token: longLived.access_token });
+  const pagesRes = await fbGraph(env, 'me/accounts', { access_token: longLived.access_token, fields: 'id,name,access_token,perms' });
+  console.error('me/accounts raw response:', JSON.stringify(pagesRes));
+
+  const grantsRes = await fbGraph(env, 'me/permissions', { access_token: longLived.access_token });
+  console.error('me/permissions raw response:', JSON.stringify(grantsRes));
+
   if (pagesRes.error) {
     console.error('me/accounts error:', pagesRes.error.message);
   } else if (!pagesRes.data || pagesRes.data.length === 0) {
