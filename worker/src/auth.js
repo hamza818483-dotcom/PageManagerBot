@@ -27,8 +27,10 @@ export async function handleAuthCallback(request, env) {
     client_secret: env.FB_APP_SECRET,
     fb_exchange_token: tokenRes.access_token
   });
+  if (longLived.error) return jsonResponse({ error: longLived.error.message }, 400);
 
   const profile = await fbGraph(env, 'me', { fields: 'id,name,email', access_token: longLived.access_token });
+  if (profile.error) return jsonResponse({ error: profile.error.message }, 400);
 
   let user = await d1First(env, `SELECT * FROM users WHERE fb_user_id = ?`, [profile.id]);
   if (!user) {
