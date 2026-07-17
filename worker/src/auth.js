@@ -2,7 +2,8 @@ import { jsonResponse, fbGraph, d1All, d1First, d1Run, newId } from './utils.js'
 
 export async function handleAuthLogin(request, env) {
   const redirectUri = `${env.SITE_URL_BACKEND}/auth/callback`;
-  const authUrl = `https://www.facebook.com/${env.FB_GRAPH_VERSION}/dialog/oauth?client_id=${env.FB_APP_ID}&redirect_uri=${encodeURIComponent(redirectUri)}&config_id=${env.FB_CONFIG_ID}&response_type=code`;
+  const scope = 'pages_show_list,pages_manage_posts,pages_read_engagement,pages_manage_metadata,pages_messaging,business_management';
+  const authUrl = `https://www.facebook.com/${env.FB_GRAPH_VERSION}/dialog/oauth?client_id=${env.FB_APP_ID}&redirect_uri=${encodeURIComponent(redirectUri)}&config_id=${env.FB_CONFIG_ID}&scope=${encodeURIComponent(scope)}&response_type=code`;
   return Response.redirect(authUrl, 302);
 }
 
@@ -41,6 +42,11 @@ export async function handleAuthCallback(request, env) {
   }
 
   const pagesRes = await fbGraph(env, 'me/accounts', { access_token: longLived.access_token });
+  if (pagesRes.error) {
+    console.error('me/accounts error:', pagesRes.error.message);
+  } else if (!pagesRes.data || pagesRes.data.length === 0) {
+    console.error('me/accounts returned empty — check FB_CONFIG_ID permission set in App Dashboard > Configurations, or scope grant.');
+  }
   if (pagesRes.data) {
     for (const p of pagesRes.data) {
       const existing = await d1First(env, `SELECT id FROM pages WHERE page_id = ?`, [p.id]);
